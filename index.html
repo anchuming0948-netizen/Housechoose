@@ -2,50 +2,52 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>揀樓助手 - 最終排序版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>揀樓同步監測站</title>
+    
     <style>
-        body { font-family: "PingFang HK", "Helvetica Neue", sans-serif; background-color: #f4f7f9; margin: 0; padding: 15px; }
+        body { font-family: "PingFang HK", "Microsoft JhengHei", sans-serif; background-color: #f4f7f9; margin: 0; padding: 15px; }
         .nav { text-align: center; position: sticky; top: 0; background: #f4f7f9; padding: 10px; z-index: 1000; border-bottom: 2px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         h1 { margin: 5px; font-size: 1.2rem; color: #333; }
+        .status-bar { background: #e3f2fd; font-size: 12px; padding: 5px; text-align: center; color: #0d47a1; margin-bottom: 5px; border-radius: 4px; }
         
-        button { padding: 10px 12px; font-size: 14px; cursor: pointer; border: none; border-radius: 6px; margin: 3px; transition: 0.2s; }
+        button { padding: 10px 12px; font-size: 14px; cursor: pointer; border: none; border-radius: 6px; margin: 3px; }
         .btn-nav { background-color: #007bff; color: white; }
-        .btn-nav.active { background-color: #0056b3; font-weight: bold; transform: scale(1.05); }
+        .btn-nav.active { background-color: #0056b3; font-weight: bold; border: 2px solid #000; }
         .btn-reset { background-color: #dc3545; color: white; float: right; padding: 5px 10px; font-size: 12px; }
 
-        .view-section { display: none; padding-top: 15px; animation: fadeIn 0.3s; }
+        .view-section { display: none; padding-top: 15px; }
         .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 表格通用樣式 */
         .container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-        table { border-collapse: collapse; background: white; margin-bottom: 20px; font-size: 13px; }
+        table { border-collapse: collapse; background: white; margin-bottom: 20px; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         th, td { border: 1px solid #ccc; width: 38px; height: 35px; text-align: center; cursor: pointer; position: relative; }
-        th { background: #eee; font-weight: bold; position: sticky; top: 110px; z-index: 50; }
-        .floor-label { background-color: #f8f9fa; width: 50px; cursor: default; font-weight: bold; color: #666; }
+        th { background: #eee; position: sticky; top: 120px; z-index: 50; }
+        .floor-label { background-color: #f8f9fa; width: 55px; cursor: default; font-weight: bold; }
 
-        /* 已售狀態 */
+        /* 售出狀態 */
         .sold { background-color: #d1d1d1 !important; color: #888 !important; text-decoration: line-through; }
-        .sold::after { content: "售"; position: absolute; font-size: 9px; bottom: 1px; right: 1px; color: red; text-decoration: none; }
+        .sold::after { content: "售"; position: absolute; font-size: 10px; bottom: 1px; right: 1px; color: red; text-decoration: none; font-weight: bold; }
 
-        /* 景觀分頁樣式 */
-        .comparison-group { background: white; border-radius: 12px; padding: 15px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e1e4e8; }
+        /* 景觀對比樣式 */
+        .comparison-group { background: white; border-radius: 12px; padding: 15px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .group-title { background: #444; color: white; padding: 8px 15px; border-radius: 6px; font-size: 16px; margin-bottom: 12px; }
-        .photo-row { display: flex; gap: 15px; overflow-x: auto; scrollbar-width: thin; }
-        .photo-card { flex: 1; min-width: 320px; background: #fafafa; border-radius: 8px; padding: 10px; border: 1px solid #eee; }
-        .photo-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; border: 1px solid #ddd; }
-        .photo-card h3 { text-align: center; margin: 5px 0; font-size: 14px; color: #444; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .photo-row { display: flex; gap: 15px; overflow-x: auto; }
+        .photo-card { flex: 1; min-width: 320px; background: #fafafa; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
+        .photo-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; }
+        .photo-card h3 { text-align: center; margin: 8px 0; font-size: 14px; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
         
-        .floor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 5px 0; }
-        .unit-btn { background: #fff; border: 1px solid #2e7d32; color: #2e7d32; padding: 6px 0; font-size: 11px; border-radius: 4px; }
+        .floor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding-top: 10px; }
+        .unit-btn { background: #fff; border: 1px solid #2e7d32; color: #2e7d32; padding: 6px 0; font-size: 11px; border-radius: 4px; cursor: pointer; }
         .unit-btn.sold { background: #d1d1d1; border-color: #888; color: #888; }
     </style>
 </head>
 <body>
 
 <div class="nav">
-    <button class="btn-reset" onclick="resetData()">清空數據</button>
-    <h1>揀樓進度 - 最終順序版</h1>
+    <button class="btn-reset" onclick="resetData()">清空全網數據</button>
+    <h1>揀樓即時同步系統</h1>
+    <div class="status-bar" id="syncStatus">正在連接雲端資料庫...</div>
     <button id="btnFull" class="btn-nav" onclick="switchView('full')">全屋苑表</button>
     <button id="btnWatch" class="btn-nav" onclick="switchView('watch')">精選清單</button>
     <button id="btnGallery" class="btn-nav active" onclick="switchView('gallery')">景觀對比</button>
@@ -69,18 +71,35 @@
     </div>
 </div>
 
-<!-- 3. 景觀對比視圖 (調整後順序) -->
+<!-- 3. 景觀對比視圖 (A4,6 -> B6,8 -> B4,5 -> A11) -->
 <div id="galleryView" class="view-section active">
-    <div id="galleryContainer" style="max-width: 900px; margin: 0 auto;">
-        <!-- JS 動態生成：順序 A4,6 -> B6,8 -> B4,5 -> A11 -->
-    </div>
+    <div id="galleryContainer" style="max-width: 900px; margin: 0 auto;"></div>
 </div>
 
-<script>
+<!-- Firebase SDK 及 邏輯 -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // 你的 Firebase 配置
+    const firebaseConfig = {
+      apiKey: "AIzaSyCoSgRrdHvRNG19AmGzwUz3RLsFZLcow4I",
+      authDomain: "housechoose-838b2.firebaseapp.com",
+      databaseURL: "https://housechoose-838b2-default-rtdb.firebaseio.com",
+      projectId: "housechoose-838b2",
+      storageBucket: "housechoose-838b2.firebasestorage.app",
+      messagingSenderId: "775761705329",
+      appId: "1:775761705329:web:2ed3975b85436adebe1ed0",
+      measurementId: "G-CP7JKYKKRS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const dbRef = ref(db, 'soldUnits');
+
     const config = {
         A: { maxFloor: 39, maxUnit: 21 },
         B: { maxFloor: 38, maxUnit: 18 },
-        // 依照要求調轉後的順序
         watchlist: [
             { b: 'A', units: [4, 6], imgMid: 'A46_mid.jpg', imgHigh: 'A68_high.jpg', label: 'A座 4及6室' },
             { b: 'B', units: [6, 8], imgMid: 'B68_mid.jpg', imgHigh: 'B68_high.jpg', label: 'B座 6及8室' },
@@ -89,14 +108,44 @@
         ]
     };
 
-    function init() {
+    window.onload = () => {
         initFullTable('A');
         initFullTable('B');
         initWatchTable();
         initGallery();
-        loadData();
-    }
 
+        // 監聽雲端數據變化
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val() || [];
+            document.querySelectorAll('.sold').forEach(el => el.classList.remove('sold'));
+            data.forEach(id => {
+                ['f-','w-','g-'].forEach(pre => {
+                    const el = document.getElementById(pre + id);
+                    if(el) el.classList.add('sold');
+                });
+            });
+            window.currentSold = data;
+            document.getElementById('syncStatus').innerHTML = `● 雲端連線正常 (已標記 ${data.length} 個單位)`;
+        });
+    };
+
+    window.toggleUnit = function(commonId) {
+        let newList = [...(window.currentSold || [])];
+        if (newList.includes(commonId)) {
+            newList = newList.filter(i => i !== commonId);
+        } else {
+            newList.push(commonId);
+        }
+        set(dbRef, newList);
+    };
+
+    window.resetData = function() {
+        if(confirm('警告：這將會清除所有人的標記數據！')) {
+            set(dbRef, []);
+        }
+    };
+
+    // 初始化表格工具
     function initFullTable(bid) {
         const t = document.getElementById('tableFull' + bid);
         let h = `<tr><th>樓層</th>`;
@@ -117,18 +166,16 @@
         const body = document.getElementById('watchBody');
         const flatList = [];
         config.watchlist.forEach(g => g.units.forEach(u => flatList.push({b: g.b, u})));
-        
         flatList.forEach(item => {
             const th = document.createElement('th');
             th.innerHTML = `${item.b}<br>${item.u}`;
             head.appendChild(th);
         });
-
         for(let f=39; f>=20; f--) {
             let row = `<tr><td class="floor-label">${f}F</td>`;
             flatList.forEach(item => {
                 const id = `${item.b}-${f}-${item.u}`;
-                if(item.b === 'B' && f === 39) row += `<td style="background:#eee; cursor:default">-</td>`;
+                if(item.b === 'B' && f === 39) row += `<td style="background:#eee;">-</td>`;
                 else row += `<td id="w-${id}" onclick="toggleUnit('${id}')">${item.u}</td>`;
             });
             body.innerHTML += row + '</tr>';
@@ -142,13 +189,13 @@
                 <div class="group-title">${group.label}</div>
                 <div class="photo-row">
                     <div class="photo-card">
-                        <h3>中層景觀 (20-29樓)</h3>
-                        <img src="${group.imgMid}" onerror="this.src='https://via.placeholder.com/400x200?text=No+Photo'">
+                        <h3>中層 (20-29F)</h3>
+                        <img src="${group.imgMid}" onerror="this.src='https://via.placeholder.com/400x200?text=圖片未上傳'">
                         <div class="floor-grid">${generateGalleryBtns(group, 20, 29)}</div>
                     </div>
                     <div class="photo-card">
-                        <h3>高層景觀 (30樓以上)</h3>
-                        <img src="${group.imgHigh}" onerror="this.src='https://via.placeholder.com/400x200?text=No+Photo'">
+                        <h3>高層 (30F+)</h3>
+                        <img src="${group.imgHigh}" onerror="this.src='https://via.placeholder.com/400x200?text=圖片未上傳'">
                         <div class="floor-grid">${generateGalleryBtns(group, 30, (group.b==='A'?39:38))}</div>
                     </div>
                 </div>
@@ -168,48 +215,13 @@
         return btns;
     }
 
-    function toggleUnit(commonId) {
-        const states = [
-            document.getElementById(`f-${commonId}`),
-            document.getElementById(`w-${commonId}`),
-            document.getElementById(`g-${commonId}`)
-        ];
-        states.forEach(el => { if(el) el.classList.toggle('sold'); });
-        saveData();
-    }
-
-    function switchView(view) {
+    window.switchView = function(view) {
         document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
         document.getElementById(view + 'View').classList.add('active');
         document.getElementById('btn' + view.charAt(0).toUpperCase() + view.slice(1)).classList.add('active');
         window.scrollTo(0,0);
     }
-
-    function saveData() {
-        const sold = [];
-        document.querySelectorAll('#fullView td.sold').forEach(el => sold.push(el.id.replace('f-', '')));
-        localStorage.setItem('flat_sync_data', JSON.stringify(sold));
-    }
-
-    function loadData() {
-        const saved = JSON.parse(localStorage.getItem('flat_sync_data') || '[]');
-        saved.forEach(id => {
-            ['f-','w-','g-'].forEach(prefix => {
-                const el = document.getElementById(prefix + id);
-                if(el) el.classList.add('sold');
-            });
-        });
-    }
-
-    function resetData() {
-        if(confirm('警告：這將清除所有已標記為「售出」的單位！確定嗎？')) {
-            localStorage.removeItem('flat_sync_data');
-            location.reload();
-        }
-    }
-
-    init();
 </script>
 
 </body>
