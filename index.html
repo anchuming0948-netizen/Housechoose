@@ -2,56 +2,60 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>揀樓助手 - 景觀對比版</title>
+    <title>揀樓助手 - 最終排序版</title>
     <style>
-        body { font-family: "PingFang HK", sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .nav { text-align: center; position: sticky; top: 0; background: #f0f2f5; padding: 10px; z-index: 1000; border-bottom: 2px solid #ddd; }
-        h1 { margin: 5px; font-size: 20px; }
+        body { font-family: "PingFang HK", "Helvetica Neue", sans-serif; background-color: #f4f7f9; margin: 0; padding: 15px; }
+        .nav { text-align: center; position: sticky; top: 0; background: #f4f7f9; padding: 10px; z-index: 1000; border-bottom: 2px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1 { margin: 5px; font-size: 1.2rem; color: #333; }
         
-        button { padding: 10px 15px; font-size: 14px; cursor: pointer; border: none; border-radius: 5px; margin: 2px; }
+        button { padding: 10px 12px; font-size: 14px; cursor: pointer; border: none; border-radius: 6px; margin: 3px; transition: 0.2s; }
         .btn-nav { background-color: #007bff; color: white; }
-        .btn-nav.active { background-color: #0056b3; font-weight: bold; border: 2px solid #000; }
-        .btn-reset { background-color: #dc3545; color: white; }
+        .btn-nav.active { background-color: #0056b3; font-weight: bold; transform: scale(1.05); }
+        .btn-reset { background-color: #dc3545; color: white; float: right; padding: 5px 10px; font-size: 12px; }
 
-        .view-section { display: none; padding-top: 20px; }
+        .view-section { display: none; padding-top: 15px; animation: fadeIn 0.3s; }
         .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 表格樣式 */
-        .container { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-        table { border-collapse: collapse; background: white; margin-bottom: 30px; }
-        th, td { border: 1px solid #ccc; width: 40px; height: 35px; text-align: center; cursor: pointer; }
-        .sold { background-color: #d1d1d1 !important; color: #888; text-decoration: line-through; }
-        .floor-label { background-color: #eee; width: 50px; cursor: default; }
+        /* 表格通用樣式 */
+        .container { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        table { border-collapse: collapse; background: white; margin-bottom: 20px; font-size: 13px; }
+        th, td { border: 1px solid #ccc; width: 38px; height: 35px; text-align: center; cursor: pointer; position: relative; }
+        th { background: #eee; font-weight: bold; position: sticky; top: 110px; z-index: 50; }
+        .floor-label { background-color: #f8f9fa; width: 50px; cursor: default; font-weight: bold; color: #666; }
+
+        /* 已售狀態 */
+        .sold { background-color: #d1d1d1 !important; color: #888 !important; text-decoration: line-through; }
+        .sold::after { content: "售"; position: absolute; font-size: 9px; bottom: 1px; right: 1px; color: red; text-decoration: none; }
 
         /* 景觀分頁樣式 */
-        .comparison-group { background: white; border-radius: 10px; padding: 15px; margin-bottom: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .group-title { background: #333; color: white; padding: 10px; border-radius: 5px; font-size: 18px; margin-bottom: 15px; }
-        .photo-row { display: flex; gap: 10px; overflow-x: auto; }
-        .photo-card { flex: 1; min-width: 350px; border: 1px solid #ddd; padding: 5px; }
-        .photo-card img { width: 100%; height: 200px; object-fit: cover; border-radius: 4px; }
-        .photo-card h3 { text-align: center; margin: 10px 0; font-size: 16px; color: #555; }
+        .comparison-group { background: white; border-radius: 12px; padding: 15px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e1e4e8; }
+        .group-title { background: #444; color: white; padding: 8px 15px; border-radius: 6px; font-size: 16px; margin-bottom: 12px; }
+        .photo-row { display: flex; gap: 15px; overflow-x: auto; scrollbar-width: thin; }
+        .photo-card { flex: 1; min-width: 320px; background: #fafafa; border-radius: 8px; padding: 10px; border: 1px solid #eee; }
+        .photo-card img { width: 100%; height: 180px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; border: 1px solid #ddd; }
+        .photo-card h3 { text-align: center; margin: 5px 0; font-size: 14px; color: #444; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
         
-        /* 景觀頁樓層按鈕 */
-        .floor-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; padding: 10px; }
-        .unit-btn { background: #e8f5e9; border: 1px solid #2e7d32; color: #2e7d32; padding: 8px 0; font-size: 12px; }
-        .unit-btn.sold { background: #d1d1d1; border: 1px solid #888; }
+        .floor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 5px 0; }
+        .unit-btn { background: #fff; border: 1px solid #2e7d32; color: #2e7d32; padding: 6px 0; font-size: 11px; border-radius: 4px; }
+        .unit-btn.sold { background: #d1d1d1; border-color: #888; color: #888; }
     </style>
 </head>
 <body>
 
 <div class="nav">
-    <h1>揀樓即時進度</h1>
-    <button id="btnFull" class="btn-nav" onclick="switchView('full')">1. 全屋苑表</button>
-    <button id="btnWatch" class="btn-nav" onclick="switchView('watch')">2. 精選清單</button>
-    <button id="btnGallery" class="btn-nav active" onclick="switchView('gallery')">3. 景觀對比</button>
-    <button class="btn-reset" onclick="resetData()">重置數據</button>
+    <button class="btn-reset" onclick="resetData()">清空數據</button>
+    <h1>揀樓進度 - 最終順序版</h1>
+    <button id="btnFull" class="btn-nav" onclick="switchView('full')">全屋苑表</button>
+    <button id="btnWatch" class="btn-nav" onclick="switchView('watch')">精選清單</button>
+    <button id="btnGallery" class="btn-nav active" onclick="switchView('gallery')">景觀對比</button>
 </div>
 
 <!-- 1. 全屋苑視圖 -->
 <div id="fullView" class="view-section">
     <div class="container">
-        <div><h3>A座</h3><table id="tableFullA"></table></div>
-        <div><h3>B座</h3><table id="tableFullB"></table></div>
+        <div><h3 style="text-align:center">A座 (1-21)</h3><table id="tableFullA"></table></div>
+        <div><h3 style="text-align:center">B座 (1-18)</h3><table id="tableFullB"></table></div>
     </div>
 </div>
 
@@ -65,27 +69,26 @@
     </div>
 </div>
 
-<!-- 3. 景觀對比視圖 (重點) -->
+<!-- 3. 景觀對比視圖 (調整後順序) -->
 <div id="galleryView" class="view-section active">
-    <div id="galleryContainer" style="max-width: 1000px; margin: 0 auto;">
-        <!-- 由 JavaScript 根據順序生成 -->
+    <div id="galleryContainer" style="max-width: 900px; margin: 0 auto;">
+        <!-- JS 動態生成：順序 A4,6 -> B6,8 -> B4,5 -> A11 -->
     </div>
 </div>
 
 <script>
     const config = {
-        A: { maxFloor: 39, maxUnit: 21, startFloor: 20 },
-        B: { maxFloor: 38, maxUnit: 18, startFloor: 20 },
-        // 指定順序：B(6,8), A(4,6), B(4,5), A(11)
+        A: { maxFloor: 39, maxUnit: 21 },
+        B: { maxFloor: 38, maxUnit: 18 },
+        // 依照要求調轉後的順序
         watchlist: [
-            { b: 'B', units: [6, 8], imgMid: 'B68_mid.jpg', imgHigh: 'B68_high.jpg', label: 'B座 6及8室' },
             { b: 'A', units: [4, 6], imgMid: 'A46_mid.jpg', imgHigh: 'A68_high.jpg', label: 'A座 4及6室' },
+            { b: 'B', units: [6, 8], imgMid: 'B68_mid.jpg', imgHigh: 'B68_high.jpg', label: 'B座 6及8室' },
             { b: 'B', units: [4, 5], imgMid: 'B45_mid.jpg', imgHigh: 'B45_high.jpg', label: 'B座 4及5室' },
             { b: 'A', units: [11],    imgMid: 'A11_mid.jpg', imgHigh: 'A11_high.jpg', label: 'A座 11室' }
         ]
     };
 
-    // 初始化所有介面
     function init() {
         initFullTable('A');
         initFullTable('B');
@@ -117,7 +120,7 @@
         
         flatList.forEach(item => {
             const th = document.createElement('th');
-            th.innerHTML = `${item.b}${item.u}`;
+            th.innerHTML = `${item.b}<br>${item.u}`;
             head.appendChild(th);
         });
 
@@ -125,7 +128,7 @@
             let row = `<tr><td class="floor-label">${f}F</td>`;
             flatList.forEach(item => {
                 const id = `${item.b}-${f}-${item.u}`;
-                if(item.b === 'B' && f === 39) row += `<td style="background:#eee">-</td>`;
+                if(item.b === 'B' && f === 39) row += `<td style="background:#eee; cursor:default">-</td>`;
                 else row += `<td id="w-${id}" onclick="toggleUnit('${id}')">${item.u}</td>`;
             });
             body.innerHTML += row + '</tr>';
@@ -136,16 +139,16 @@
         const container = document.getElementById('galleryContainer');
         config.watchlist.forEach(group => {
             let html = `<div class="comparison-group">
-                <div class="group-title">${group.label} - 景觀對比</div>
+                <div class="group-title">${group.label}</div>
                 <div class="photo-row">
                     <div class="photo-card">
-                        <img src="${group.imgMid}" onerror="this.src='https://via.placeholder.com/400x200?text=Missing+Mid+Photo'">
                         <h3>中層景觀 (20-29樓)</h3>
+                        <img src="${group.imgMid}" onerror="this.src='https://via.placeholder.com/400x200?text=No+Photo'">
                         <div class="floor-grid">${generateGalleryBtns(group, 20, 29)}</div>
                     </div>
                     <div class="photo-card">
-                        <img src="${group.imgHigh}" onerror="this.src='https://via.placeholder.com/400x200?text=Missing+High+Photo'">
                         <h3>高層景觀 (30樓以上)</h3>
+                        <img src="${group.imgHigh}" onerror="this.src='https://via.placeholder.com/400x200?text=No+Photo'">
                         <div class="floor-grid">${generateGalleryBtns(group, 30, (group.b==='A'?39:38))}</div>
                     </div>
                 </div>
@@ -159,22 +162,19 @@
         for(let f=end; f>=start; f--) {
             group.units.forEach(u => {
                 const id = `${group.b}-${f}-${u}`;
-                btns += `<button id="g-${id}" class="unit-btn" onclick="toggleUnit('${id}')">${f}F (${u}室)</button>`;
+                btns += `<button id="g-${id}" class="unit-btn" onclick="toggleUnit('${id}')">${f}F(${u})</button>`;
             });
         }
         return btns;
     }
 
-    // 核心邏輯：切換單位狀態
     function toggleUnit(commonId) {
-        const elements = [
+        const states = [
             document.getElementById(`f-${commonId}`),
             document.getElementById(`w-${commonId}`),
             document.getElementById(`g-${commonId}`)
         ];
-        elements.forEach(el => {
-            if(el) el.classList.toggle('sold');
-        });
+        states.forEach(el => { if(el) el.classList.toggle('sold'); });
         saveData();
     }
 
@@ -189,24 +189,22 @@
     function saveData() {
         const sold = [];
         document.querySelectorAll('#fullView td.sold').forEach(el => sold.push(el.id.replace('f-', '')));
-        localStorage.setItem('flat_status_v3', JSON.stringify(sold));
+        localStorage.setItem('flat_sync_data', JSON.stringify(sold));
     }
 
     function loadData() {
-        const saved = JSON.parse(localStorage.getItem('flat_status_v3') || '[]');
+        const saved = JSON.parse(localStorage.getItem('flat_sync_data') || '[]');
         saved.forEach(id => {
-            const el1 = document.getElementById(`f-${id}`);
-            const el2 = document.getElementById(`w-${id}`);
-            const el3 = document.getElementById(`g-${id}`);
-            if(el1) el1.classList.add('sold');
-            if(el2) el2.classList.add('sold');
-            if(el3) el3.classList.add('sold');
+            ['f-','w-','g-'].forEach(prefix => {
+                const el = document.getElementById(prefix + id);
+                if(el) el.classList.add('sold');
+            });
         });
     }
 
     function resetData() {
-        if(confirm('確定清除所有數據？')) {
-            localStorage.removeItem('flat_status_v3');
+        if(confirm('警告：這將清除所有已標記為「售出」的單位！確定嗎？')) {
+            localStorage.removeItem('flat_sync_data');
             location.reload();
         }
     }
